@@ -1,26 +1,51 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  --font-primary: "Public Sans";
+  --color-background: #f2f4ff;
+  --color-background-blur: #c4c5d5;
+  --color-background-secondary: #f8f9fd;
+  --color-primary: #181819;
+  --color-custom-orange: #f6882f;
+  --color-custom-white: #fafafa;
+  --color-custom-secondary-white: #fcfdff;
+  --color-custom-gray: #5c5c5e;
+  --color-custom-black: #181819;
+  --color-custom-lightGray: #e1e2e6;
+  --color-custom-text-gray: #87878a;
+  --color-custom-orange-light: #f9e6d7;
+  --color-custom-purple: #34245d;
+  --color-custom-blue: #313266;
+  --color-custom-light-blue: #36405e;
+  --color-custom-white2: #f8f4ff;
+  --color-custom-blue2: #5c47f9;
+  --color-light-green: #daf5e0;
+  --color-custom-green: #197c2f;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@keyframes shadowRun {
+  0% {
+    box-shadow: -10px 10px 10px 0 rgba(255, 255, 255, 0.3),
+      /* Снизу слева */ 10px -10px 10px 0 rgba(255, 255, 255, 0.3); /* Сверху справа */
+  }
+  25% {
+    box-shadow: -10px -10px 10px 0 rgba(255, 255, 255, 0.3),
+      /* Сверху слева */ 10px 10px 10px 0 rgba(255, 255, 255, 0.3); /* Снизу справа */
+  }
+  50% {
+    box-shadow: 10px -10px 10px 0 rgba(255, 255, 255, 0.3),
+      /* Сверху справа */ -10px 10px 10px 0 rgba(255, 255, 255, 0.3); /* Снизу слева */
+  }
+  75% {
+    box-shadow: 10px 10px 10px 0 rgba(255, 255, 255, 0.3),
+      /* Снизу справа */ -10px -10px 10px 0 rgba(255, 255, 255, 0.3); /* Сверху слева */
+  }
+  100% {
+    box-shadow: -10px 10px 10px 0 rgba(255, 255, 255, 0.3),
+      /* Снизу слева */ 10px -10px 10px 0 rgba(255, 255, 255, 0.3); /* Сверху справа */
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+.animate-shadowRun {
+  animation: shadowRun 4s linear infinite;
 }

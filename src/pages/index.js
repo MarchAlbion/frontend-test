@@ -1,113 +1,158 @@
-import Image from "next/image";
-import { Geist, Geist_Mono } from "next/font/google";
+import { useState, useEffect, useRef } from "react";
+import Sidebar from "@/components/Sidebar";
+import Dropdown from "@/components/DropDown";
+import InnerDropDown from "@/components/InnerDropDown";
+import { CustomInput } from "@/components/Custom-input";
+import { Missing } from "@/components/Missing";
+import { Main } from "@/components/Main";
+import { Public_Sans } from "next/font/google";
+import Autofill from "@/components/Autofill";
+import { AnimatePresence } from "framer-motion";
+import { Checked } from "@/components/Checked";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const publicSans = Public_Sans({
   subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  weight: ["400", "600", "700"],
+  variable: "--font-public-sans",
+  display: "swap",
 });
 
 export default function Home() {
+  const [isBlurred, setIsBlurred] = useState(false);
+  const [name, setName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [companyAddress, setCompanyAddress] = useState("");
+  const [companyName, setCompanyName] = useState("");
+  const [isSkeleton, setIsSkeleton] = useState(false);
+  const [animatedText, setAnimatedText] = useState(false);
+  const [globalBlur, setGlobalBlur] = useState(false);
+  const [filled, setFilled] = useState(false);
+
+  const timeoutRefs = useRef([]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsBlurred(true);
+    }, 250);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  const clearAllTimeouts = () => {
+    timeoutRefs.current.forEach(clearTimeout);
+    timeoutRefs.current = [];
+  };
+
+  const onAutofill = () => {
+    clearAllTimeouts();
+
+    setCompanyAddress("Company@gmail.com");
+    setCompanyName("Cy Company");
+    setName("John");
+    setLastName("Doe");
+    setIsBlurred(false);
+    setIsSkeleton(true);
+
+    timeoutRefs.current.push(
+      setTimeout(() => {
+        setIsSkeleton(false);
+        setAnimatedText(true);
+        setFilled(true);
+        console.log("setAnimatedText");
+      }, 3000)
+    );
+
+    timeoutRefs.current.push(
+      setTimeout(() => {
+        setGlobalBlur(true);
+        console.log("Global blur");
+      }, 6000)
+    );
+  };
+  const onCheCked = () => {
+    setGlobalBlur(false);
+    setAnimatedText(false);
+  };
+
+  useEffect(() => {
+    return () => clearAllTimeouts();
+  }, []);
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/pages/index.js
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <div className={`${publicSans.variable} font-primary`}>
+      {globalBlur && <Checked onClick={() => onCheCked()} />}
+
+      <div
+        className={`${
+          isBlurred || globalBlur ? "bg-background-blur" : "bg-background"
+        } w-screen h-screen flex px-[40px] py-[32px] justify-between  transition-colors duration-300 ${
+          globalBlur ? "blur-[2px]" : ""
+        } `}
+      >
+        {isBlurred && (
+          <div className="fixed top-0 left-0 w-full h-full backdrop-blur-[2px]  z-10 pointer-events-none" />
+        )}
+
+        <div className="relative z-20">
+          <Sidebar isBlurred={isBlurred}>
+            <AnimatePresence>
+              {isBlurred && <Autofill onAutofill={onAutofill} />}
+            </AnimatePresence>
+            <Dropdown>
+              <InnerDropDown title="employer" isOpenDefault={true}>
+                <Missing />
+                <div className="h-6"></div>
+                <CustomInput
+                  label="First name"
+                  placeholder="Enter Value"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  isSkeleton={isSkeleton}
+                  animateText={animatedText}
+                />
+                <CustomInput
+                  label="Last name"
+                  placeholder="Enter Value"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  isSkeleton={isSkeleton}
+                  animateText={animatedText}
+                />
+                <CustomInput
+                  label="Company address"
+                  placeholder="Enter Value"
+                  value={companyAddress}
+                  onChange={(e) => setCompanyAddress(e.target.value)}
+                  isSkeleton={isSkeleton}
+                  animateText={animatedText}
+                />
+                <CustomInput
+                  label="Company name"
+                  placeholder="Enter Value"
+                  value={companyName}
+                  onChange={(e) => setCompanyName(e.target.value)}
+                  isSkeleton={isSkeleton}
+                  animateText={animatedText}
+                />
+              </InnerDropDown>
+              <InnerDropDown title="document details" />
+              <InnerDropDown title="employee" />
+            </Dropdown>
+          </Sidebar>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
+
+        <div className={`relative z-5 ${isBlurred ? "blur-[2px]" : ""}`}>
+          <Main
+            isSkeleton={isSkeleton}
+            name={name}
+            lastName={lastName}
+            companyAddress={companyAddress}
+            companyName={companyName}
+            animatedText={animatedText}
+            filled={filled}
           />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+        </div>
+      </div>
     </div>
   );
 }
